@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/style/custom.css">
+    <title>Add Music</title>
+</head>
+<body>
+    <h1>Add Music</h1>
+    <form class="col-sm-12 start-content">
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Music</label>
+            <div class="col-sm-8">
+                <input type="text" id="name" name="name" class="col-sm-9" autofocus>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Mac Address</label>
+            <div class="col-sm-6">
+                <input type="text" id="mac" class="col-sm-12" name="mac">
+            </div>
+            <button class="col-sm-2 btn btn-success" type="button" onclick="generateMacAddress()">Generate</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Music</button>
+    </form>
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e) {
+            e.preventDefault();
+
+            const name = document.querySelector('#name').value;
+            const mac = document.querySelector('#mac').value;
+            var node = { name, mac }
+            ipcRenderer.send('music:add', node);
+        }
+    </script>
+    <script>
+        function generateMacAddress() {
+            const mac = "XX:XX:XX:XX:XX:XX".replace(/X/g, function() {
+                return "0123456789ABCDEF".charAt(Math.floor(Math.random() * 16));
+            });
+
+            document.querySelector('#mac').value = mac;
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

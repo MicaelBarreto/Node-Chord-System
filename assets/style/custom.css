@@ -1,0 +1,61 @@
+.circle-active {
+    background: #28a745;
+    border: 3px solid #28a745;
+}
+
+.circle-deactive {
+    background: #dc3545;
+    border: 3px solid #dc3545;
+}
+
+.circle {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+.start-content {
+    position: fixed;
+    right: 5%;
+    left: 5%;
+    top: 20%;
+    width: 90%;
+    background: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.content {
+    background: white;
+}
+
+.start-text p{
+    margin-left: 1px;
+}
+
+.corp-text {
+    position: fixed;
+    float: right;
+    margin: 0;
+    margin-right: 2px;
+    bottom: 0;
+    right: 0;
+}
+
+body {
+    background-color: rgb(230, 230, 230);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 2%;
+}
+
+table {
+    border-top: none;
+    width: 100%;
+}
+
+form {
+    margin-top: 2%
+}

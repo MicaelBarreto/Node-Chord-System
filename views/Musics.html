@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/style/custom.css">
+    <title>Musics</title>
+</head>
+<body>
+    <h1>Musics</h1>
+    <form class="col-sm-12">
+        <div class="form-group row">
+            <div class="col-sm-8 offset-sm-2">
+                <input class="form-control" type="text" id="music" name="music" autofocus>
+                <small class="form-text text-muted">You can type the music name or the node</small>
+            </div>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-success">Find Music</button>
+            </div>
+        </div>
+    </form>
+    <div class="row d-flex content">
+        <div class="col-sm-8 border">
+            <table class="table table-striped col-sm-12">
+                <thead>
+                    <tr>
+                        <th scope="col">Node</th>
+                        <th scope="col">Music</th>
+                        <th scope="col">Mac Address</th>
+                        <th scope="col">Next Node</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-4 border content">
+            <h4>Logs</h4>
+            <ul class="list-group list-group-flush"></ul>
+        </div>
+    </div>
+    
+
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+        const ul = document.querySelector('ul');
+        const table = document.querySelector('table');
+        var log = [];
+
+        window.onload = function() {
+            getAllNodes();
+        };
+
+        ipcRenderer.on('logs:add', (e, entries) => {
+            ul.innerHTML = "";
+            entries.map(entry => {
+                const li = document.createElement('li');
+                const entryText = document.createTextNode(entry);
+                li.appendChild(entryText);
+                li.classList.add("list-group-item");
+                ul.appendChild(li);
+            });
+        });
+
+        ipcRenderer.on('handle:nodes', () => {
+            getAllNodes();
+        });
+
+        ipcRenderer.on('musics:get', (e, musics) => {
+            table.tBodies[0].innerHTML = "";
+            musics.map(music => {
+                var newRow = document.createElement('tr');
+                Object.entries(music).map(value => {
+                    if(value[0] === 'id') {
+                        var newCell  = document.createElement('td');
+                        var newText  = document.createTextNode(value[1]);
+                        newCell.appendChild(newText);
+                        newRow.appendChild(newCell);
+                    }
+
+                    if(value[0] === 'value') {
+                        var newCell  = document.createElement('td');
+                        var newText  = document.createTextNode(value[1]);
+                        newCell.appendChild(newText);
+                        newRow.appendChild(newCell);
+                    }
+
+                    if(value[0] === 'mac_address') {
+                        var newCell  = document.createElement('td');
+                        var newText  = document.createTextNode(value[1]);
+                        newCell.appendChild(newText);
+                        newRow.appendChild(newCell);
+                    }
+
+                    if(value[0] === 'next_node') {
+                        var newCell  = document.createElement('td');
+                        var newText  = document.createTextNode(value[1]);
+                        newCell.appendChild(newText);
+                        newRow.appendChild(newCell);
+                    }
+
+                    if(value[0] === 'active') {
+                        var newCell  = document.createElement('td');
+                        var newDiv  = document.createElement('div');
+                        value[1] ? newDiv.setAttribute('class', 'circle circle-active') : newDiv.setAttribute('class', 'circle circle-deactive');
+
+                        newCell.appendChild(newDiv);
+                        newRow.appendChild(newCell);
+
+                        newCell  = document.createElement('td');
+                        newDiv  = document.createElement('div');
+                        
+                        var newBtn = document.createElement('button');
+                        newBtn.setAttribute('class', 'btn btn-outline-primary');
+                        newBtn.setAttribute('onCLick', `setActive(${music.id})`);
+                        newBtn.textContent = (value[1] ? "Deactivate": "Activate");
+                        newDiv.appendChild(newBtn);
+
+                        newBtn = document.createElement('button');
+                        newBtn.setAttribute('class', 'btn btn-outline-danger');
+                        newBtn.setAttribute('onCLick', `deleteButton(${music.id})`);
+                        newBtn.textContent = "Delete";
+                        newDiv.appendChild(newBtn);
+
+                        newCell.appendChild(newDiv);
+                        newRow.appendChild(newCell);
+                    }
+                });
+                table.tBodies[0].appendChild(newRow);
+            });
+        });
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e) {
+            e.preventDefault();
+
+            const music = document.querySelector('#music').value;
+            ipcRenderer.send('music:find', music);
+        }
+
+        async function deleteButton(id) {
+            ipcRenderer.send('music:delete', id);
+        }
+
+        async function setActive(id) {
+            ipcRenderer.send('music:active', id);
+        }
+
+        function getAllNodes() {
+            ipcRenderer.send('music:getAll');
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
